@@ -8,8 +8,8 @@ from typing import cast
 
 class NapalmDevice(NetworkDevice):
     def __init__(self, driver: NetworkDriver) -> None:
-        if not isinstance(driver, NetworkDriver):
-            raise TypeError("Driver must be an instance of napalm.base.NetworkDriver")
+        if not driver:
+            raise TypeError("Driver cannot be None")
         self._device: NetworkDriver = driver
 
     def __enter__(self) -> "NapalmDevice":
