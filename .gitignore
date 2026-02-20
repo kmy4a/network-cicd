@@ -11,3 +11,9 @@ wheels/
 
 # Containerlab files
 containerlab/clab-clos-testbed/
+
+# Pytest files
+.coverage
+
+# VSCode files
+.vscode/

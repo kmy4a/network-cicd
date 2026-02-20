@@ -8,6 +8,8 @@ from typing import cast
 
 class NapalmDevice(NetworkDevice):
     def __init__(self, driver: NetworkDriver) -> None:
+        if not isinstance(driver, NetworkDriver):
+            raise TypeError("Driver must be an instance of napalm.base.NetworkDriver")
         self._device: NetworkDriver = driver
 
     def __enter__(self) -> "NapalmDevice":
@@ -81,7 +83,11 @@ class NapalmDevice(NetworkDevice):
 
     def get_route_to(self, destination: str) -> RoutesDict:
         """Get routing information for a specific destination from the EOS device"""
-        raw = self._device.get_route_to(destination=destination)
+        formatted_destination: str = destination.strip()
+        if not formatted_destination:
+            raise ValueError("Destination cannot be empty")
+
+        raw = self._device.get_route_to(destination=formatted_destination)
 
         # translate the raw data into our defined type-safe data models
         routes = cast(dict[str, list[dict]], raw)
