@@ -1,0 +1,14 @@
+---
+- name: Push configuration to all EOS nodes
+  hosts: ceos
+  gather_facts: false
+  tasks:
+    - name: Wait for connection each ceos node (max 180s)
+      ansible.builtin.wait_for_connection:
+        timeout: 180
+
+    - name: Render and load intended config from file
+      arista.eos.eos_config:
+        src: "../../config/{{ inventory_hostname }}.cfg"
+      register: eos_push
+  tags: config

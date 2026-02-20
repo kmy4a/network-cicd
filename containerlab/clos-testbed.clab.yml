@@ -1,0 +1,47 @@
+---
+name: clos-testbed
+
+mgmt:
+  ipv4-subnet: 172.20.20.0/24
+
+topology:
+  nodes:
+    spine01:
+      kind: arista_ceos
+      image: ceos:4.35.1F
+      mgmt-ipv4: 172.20.20.11
+
+    spine02:
+      kind: arista_ceos
+      image: ceos:4.35.1F
+      mgmt-ipv4: 172.20.20.12
+
+    leaf01:
+      kind: arista_ceos
+      image: ceos:4.35.1F
+      mgmt-ipv4: 172.20.20.21
+
+    leaf02:
+      kind: arista_ceos
+      image: ceos:4.35.1F
+      mgmt-ipv4: 172.20.20.22
+
+    leaf03:
+      kind: arista_ceos
+      image: ceos:4.35.1F
+      mgmt-ipv4: 172.20.20.23
+
+    leaf04:
+      kind: arista_ceos
+      image: ceos:4.35.1F
+      mgmt-ipv4: 172.20.20.24
+
+  links:
+    - endpoints: ["spine01:eth1_1", "leaf01:eth63_1"]  
+    - endpoints: ["spine01:eth2_1", "leaf02:eth63_1"]
+    - endpoints: ["spine01:eth3_1", "leaf03:eth63_1"]
+    - endpoints: ["spine01:eth4_1", "leaf04:eth63_1"]
+    - endpoints: ["spine02:eth1_1", "leaf01:eth64_1"]
+    - endpoints: ["spine02:eth2_1", "leaf02:eth64_1"]
+    - endpoints: ["spine02:eth3_1", "leaf03:eth64_1"]
+    - endpoints: ["spine02:eth4_1", "leaf04:eth64_1"]
