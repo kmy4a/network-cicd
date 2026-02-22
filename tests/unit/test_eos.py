@@ -140,11 +140,7 @@ def test_eos_constructor_call_order(mocker):
     with mocker.patch(
         "network_cicd.devices.eos.get_network_driver", side_effect=track_get_driver
     ):
-        try:
-            EOS("hostname", "user", "pass")
-        except:
-            pass
-
+        EOS("hostname", "user", "pass")
         assert call_order[0] == "get_driver"
         assert call_order[1] == "driver_init"
 
