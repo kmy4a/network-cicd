@@ -1,4 +1,5 @@
 from napalm import get_network_driver
+
 from network_cicd.devices.napalm_base import NapalmDevice
 
 

@@ -1,4 +1,5 @@
 import pytest
+
 from network_cicd.devices.factory import create_device
 from network_cicd.devices.protocol import NetworkDevice
 
@@ -77,7 +78,7 @@ def test_create_device_password_whitespace_stripping(mocker):
     mock_eos.return_value = mock_instance
 
     create_device("eos", "hostname", "user", "  pass  ")
-    
+
     mock_eos.assert_called_once_with("hostname", "user", "pass")
 
 
@@ -187,7 +188,7 @@ def test_create_device_with_fqdn_hostname(mocker):
     mock_eos.return_value = mock_instance
 
     create_device("eos", "spine01.example.com", "user", "pass")
-    
+
     mock_eos.assert_called_once_with("spine01.example.com", "user", "pass")
 
 
@@ -198,7 +199,7 @@ def test_create_device_with_ip_address_hostname(mocker):
     mock_eos.return_value = mock_instance
 
     create_device("eos", "192.168.1.1", "user", "pass")
-    
+
     mock_eos.assert_called_once_with("192.168.1.1", "user", "pass")
 
 

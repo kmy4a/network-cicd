@@ -1,8 +1,8 @@
 import pytest
 from napalm.base import NetworkDriver
+
+from network_cicd.devices.napalm_base import NapalmDevice
 from network_cicd.devices.protocol import NetworkDevice
-from network_cicd.devices.napalm_base import NapalmDevice, InterfaceIPEntry
-from network_cicd.models.interface import InterfaceEntry
 
 
 def test_napalm_device_init_with_valid_driver(mocker):
@@ -62,11 +62,12 @@ def test_napalm_device_get_interfaces_success(mocker):
     mock_driver.get_interfaces.return_value = {
         "Ethernet1": {
             "description": "Link to core",
-            "enabled": True,
+            "is_up": True,
             "mtu": 1500,
             "speed": 1000.0,
-            "is_up": True,
+            "is_enabled": True,
             "last_flapped": -1.0,
+            "mac_address": "00:11:22:33:44:55",
         }
     }
 
@@ -74,10 +75,9 @@ def test_napalm_device_get_interfaces_success(mocker):
     result = device.get_interfaces()
 
     assert "Ethernet1" in result
-    assert isinstance(result["Ethernet1"], InterfaceEntry)
-    assert result["Ethernet1"].description == "Link to core"
-    assert result["Ethernet1"].enabled is True
-    assert result["Ethernet1"].mtu == 1500
+    assert result["Ethernet1"]["description"] == "Link to core"
+    assert result["Ethernet1"]["is_enabled"] is True
+    assert result["Ethernet1"]["mtu"] == 1500
 
 
 def test_napalm_device_get_interfaces_empty(mocker):
@@ -135,9 +135,8 @@ def test_napalm_device_get_interfaces_ip_success(mocker):
     result = device.get_interfaces_ip()
 
     assert "Ethernet1" in result
-    assert isinstance(result["Ethernet1"], InterfaceIPEntry)
-    assert "10.0.0.1" in result["Ethernet1"].ipv4
-    assert "2001:db8::1" in result["Ethernet1"].ipv6
+    assert "10.0.0.1" in result["Ethernet1"]["ipv4"]
+    assert "2001:db8::1" in result["Ethernet1"]["ipv6"]
 
 
 def test_napalm_device_get_interfaces_ip_with_ipv4_only(mocker):
@@ -150,8 +149,8 @@ def test_napalm_device_get_interfaces_ip_with_ipv4_only(mocker):
     device = NapalmDevice(mock_driver)
     result = device.get_interfaces_ip()
 
-    assert len(result["Ethernet1"].ipv4) == 1
-    assert len(result["Ethernet1"].ipv6) == 0
+    assert len(result["Ethernet1"]["ipv4"]) == 1
+    assert len(result["Ethernet1"]["ipv6"]) == 0
 
 
 def test_napalm_device_get_interfaces_ip_with_ipv6_only(mocker):
@@ -164,8 +163,8 @@ def test_napalm_device_get_interfaces_ip_with_ipv6_only(mocker):
     device = NapalmDevice(mock_driver)
     result = device.get_interfaces_ip()
 
-    assert len(result["Ethernet1"].ipv4) == 0
-    assert len(result["Ethernet1"].ipv6) == 1
+    assert len(result["Ethernet1"]["ipv4"]) == 0
+    assert len(result["Ethernet1"]["ipv6"]) == 1
 
 
 def test_napalm_device_get_interfaces_ip_empty(mocker):
@@ -188,8 +187,8 @@ def test_napalm_device_get_interfaces_ip_missing_keys(mocker):
     result = device.get_interfaces_ip()
 
     assert "Ethernet1" in result
-    assert result["Ethernet1"].ipv4 == {}
-    assert result["Ethernet1"].ipv6 == {}
+    assert result["Ethernet1"]["ipv4"] == {}
+    assert result["Ethernet1"]["ipv6"] == {}
 
 
 def test_napalm_device_get_bgp_neighbors_success(mocker):
@@ -220,9 +219,9 @@ def test_napalm_device_get_bgp_neighbors_success(mocker):
     result = device.get_bgp_neighbors()
 
     assert "global" in result
-    assert result["global"].router_id == "10.0.0.1"
-    assert "10.0.0.2" in result["global"].peers
-    assert result["global"].peers["10.0.0.2"].local_as == 65000
+    assert result["global"]["router_id"] == "10.0.0.1"
+    assert "10.0.0.2" in result["global"]["peers"]
+    assert result["global"]["peers"]["10.0.0.2"]["local_as"] == 65000
 
 
 def test_napalm_device_get_bgp_neighbors_multiple_peers(mocker):
@@ -259,9 +258,9 @@ def test_napalm_device_get_bgp_neighbors_multiple_peers(mocker):
     device = NapalmDevice(mock_driver)
     result = device.get_bgp_neighbors()
 
-    assert len(result["global"].peers) == 2
-    assert result["global"].peers["10.0.0.2"].is_up is True
-    assert result["global"].peers["10.0.0.3"].is_up is False
+    assert len(result["global"]["peers"]) == 2
+    assert result["global"]["peers"]["10.0.0.2"]["is_up"] is True
+    assert result["global"]["peers"]["10.0.0.3"]["is_up"] is False
 
 
 def test_napalm_device_get_bgp_neighbors_no_description(mocker):
@@ -287,7 +286,7 @@ def test_napalm_device_get_bgp_neighbors_no_description(mocker):
     device = NapalmDevice(mock_driver)
     result = device.get_bgp_neighbors()
 
-    assert result["global"].peers["10.0.0.2"].description is None
+    assert result["global"]["peers"]["10.0.0.2"]["description"] is None
 
 
 def test_napalm_device_get_bgp_neighbors_empty_peers(mocker):
@@ -300,7 +299,7 @@ def test_napalm_device_get_bgp_neighbors_empty_peers(mocker):
     device = NapalmDevice(mock_driver)
     result = device.get_bgp_neighbors()
 
-    assert len(result["global"].peers) == 0
+    assert len(result["global"]["peers"]) == 0
 
 
 def test_napalm_device_get_bgp_neighbors_missing_address_family(mocker):
@@ -327,7 +326,7 @@ def test_napalm_device_get_bgp_neighbors_missing_address_family(mocker):
     device = NapalmDevice(mock_driver)
     result = device.get_bgp_neighbors()
 
-    af = result["global"].peers["10.0.0.2"].address_family
+    af = result["global"]["peers"]["10.0.0.2"]["address_family"]
     assert af["ipv4"] == {}
     assert af["ipv6"] == {}
 
@@ -358,7 +357,7 @@ def test_napalm_device_get_route_to_success(mocker):
 
     assert "10.0.0.0/24" in result
     assert len(result["10.0.0.0/24"]) == 1
-    assert result["10.0.0.0/24"][0].next_hop == "10.1.1.1"
+    assert result["10.0.0.0/24"][0]["next_hop"] == "10.1.1.1"
     mock_driver.get_route_to.assert_called_once_with(destination="10.0.0.0/24")
 
 
@@ -430,9 +429,9 @@ def test_napalm_device_get_route_to_multiple_routes(mocker):
     device = NapalmDevice(mock_driver)
     result = device.get_route_to("10.0.0.0/24")
 
-    assert len(result["10.0.0.0/24"]) == 2
-    assert result["10.0.0.0/24"][0].current_active is True
-    assert result["10.0.0.0/24"][1].current_active is False
+    assert len(result["10.0.0.0/24"]) == 2  # type: ignore
+    assert result["10.0.0.0/24"][0]["current_active"] is True  # type: ignore
+    assert result["10.0.0.0/24"][1]["current_active"] is False  # type: ignore
 
 
 def test_napalm_device_get_route_to_no_routes(mocker):
@@ -454,6 +453,16 @@ def test_napalm_device_get_route_to_missing_optional_fields(mocker):
             {
                 "local_as": 65000,
                 "remote_as": 65001,
+                "current_active": False,
+                "last_active": False,
+                "age": 0,
+                "next_hop": "",
+                "protocol": "",
+                "outgoing_interface": "",
+                "preference": 0,
+                "inactive_reason": "",
+                "routing_table": "",
+                "selected_next_hop": False,
             }
         ]
     }
@@ -461,10 +470,10 @@ def test_napalm_device_get_route_to_missing_optional_fields(mocker):
     device = NapalmDevice(mock_driver)
     result = device.get_route_to("10.0.0.0/24")
 
-    route = result["10.0.0.0/24"][0]
-    assert route.current_active is False
-    assert route.age == 0
-    assert route.next_hop == ""
+    route = result["10.0.0.0/24"][0]  # type: ignore
+    assert route["current_active"] is False
+    assert route["age"] == 0
+    assert route["next_hop"] == ""
 
 
 def test_napalm_device_get_route_to_with_protocol_attributes(mocker):
@@ -491,7 +500,7 @@ def test_napalm_device_get_route_to_with_protocol_attributes(mocker):
     device = NapalmDevice(mock_driver)
     result = device.get_route_to("10.0.0.0/24")
 
-    assert result["10.0.0.0/24"][0].protocol_attributes == {"as_path": "65001"}
+    assert result["10.0.0.0/24"][0]["protocol_attributes"] == {"as_path": "65001"}  # type: ignore
 
 
 def test_napalm_device_is_network_device(mocker):

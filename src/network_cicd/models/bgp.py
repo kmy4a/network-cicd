@@ -29,6 +29,9 @@ class BGPGlobalDict(TypedDict):
 
 
 # "global" is a reserved keyword in Python, so we use function style definition for TypedDict
-BGPNeighborsDict = TypedDict("BGPNeighborsDict", {
-    "global": BGPGlobalDict,
-})
+BGPNeighborsDict = TypedDict(
+    "BGPNeighborsDict",
+    {
+        "global": BGPGlobalDict,
+    },
+)

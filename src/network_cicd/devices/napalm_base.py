@@ -1,9 +1,23 @@
-from napalm.base import NetworkDriver
-from network_cicd.devices.protocol import NetworkDevice
-from network_cicd.models.interface import InterfaceDict, InterfaceEntry, IPEntry, InterfaceIPEntry, InterfaceIPDict
-from network_cicd.models.bgp import AFEntry, AddressFamilyDict, BGPPeerDict, BGPGlobalDict, BGPNeighborsDict
-from network_cicd.models.route import RoutesDict, RouteEntry
 from typing import cast
+
+from napalm.base import NetworkDriver
+
+from network_cicd.devices.protocol import NetworkDevice
+from network_cicd.models.bgp import (
+    AddressFamilyDict,
+    AFEntry,
+    BGPGlobalDict,
+    BGPNeighborsDict,
+    BGPPeerDict,
+)
+from network_cicd.models.interface import (
+    InterfaceDict,
+    InterfaceEntry,
+    InterfaceIPDict,
+    InterfaceIPEntry,
+    IPEntry,
+)
+from network_cicd.models.route import RouteEntry, RoutesDict
 
 
 class NapalmDevice(NetworkDevice):
@@ -21,10 +35,7 @@ class NapalmDevice(NetworkDevice):
     def get_interfaces(self) -> InterfaceDict:
         """Get interface information from the EOS device"""
         interfaces = self._device.get_interfaces()
-        return {
-            name: InterfaceEntry(**info)
-            for name, info in interfaces.items()
-        }
+        return {name: InterfaceEntry(**info) for name, info in interfaces.items()}
 
     def get_interfaces_ip(self) -> InterfaceIPDict:
         """Get interface IP information from the EOS device"""
@@ -42,7 +53,6 @@ class NapalmDevice(NetworkDevice):
             )
 
         return result
-
 
     def get_bgp_neighbors(self) -> BGPNeighborsDict:
         """Get BGP neighbor information from the EOS device"""
