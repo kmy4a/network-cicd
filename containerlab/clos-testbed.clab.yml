@@ -37,7 +37,7 @@ topology:
       mgmt-ipv4: 172.20.20.24
 
   links:
-    - endpoints: ["spine01:eth1_1", "leaf01:eth63_1"]  
+    - endpoints: ["spine01:eth1_1", "leaf01:eth63_1"]
     - endpoints: ["spine01:eth2_1", "leaf02:eth63_1"]
     - endpoints: ["spine01:eth3_1", "leaf03:eth63_1"]
     - endpoints: ["spine01:eth4_1", "leaf04:eth63_1"]
