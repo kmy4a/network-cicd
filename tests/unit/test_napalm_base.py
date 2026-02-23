@@ -56,6 +56,141 @@ def test_napalm_device_with_statement(mocker):
     mock_driver.close.assert_called_once()
 
 
+def test_napalm_device_get_facts_success(mocker):
+    """Test get_facts returns device facts data"""
+    mock_driver = mocker.Mock(spec=NetworkDriver)
+    mock_driver.get_facts.return_value = {
+        "hostname": "leaf01",
+        "fqdn": "leaf01.example.com",
+        "vendor": "Arista",
+        "model": "DCS-7050SX3-48YC8",
+        "serial_number": "ABC123456789",
+        "os_version": "4.28.0F",
+        "uptime": 3600.5,
+        "interface_list": ["Ethernet1", "Ethernet2", "Management1"],
+    }
+
+    device = NapalmDevice(mock_driver)
+    result = device.get_facts()
+
+    assert result["hostname"] == "leaf01"
+    assert result["fqdn"] == "leaf01.example.com"
+    assert result["vendor"] == "Arista"
+    assert result["model"] == "DCS-7050SX3-48YC8"
+    assert result["serial_number"] == "ABC123456789"
+    assert result["os_version"] == "4.28.0F"
+    assert result["uptime"] == 3600.5
+    assert result["interface_list"] == ["Ethernet1", "Ethernet2", "Management1"]
+
+
+def test_napalm_device_get_facts_different_device(mocker):
+    """Test get_facts with different device type"""
+    mock_driver = mocker.Mock(spec=NetworkDriver)
+    mock_driver.get_facts.return_value = {
+        "hostname": "spine01",
+        "fqdn": "spine01.prod.com",
+        "vendor": "Juniper",
+        "model": "QFX5100-48S-6Q",
+        "serial_number": "JNX987654321",
+        "os_version": "21.2R1.10",
+        "uptime": 7200.0,
+        "interface_list": ["ge-0/0/0", "ge-0/0/1", "ge-0/0/2"],
+    }
+
+    device = NapalmDevice(mock_driver)
+    result = device.get_facts()
+
+    assert result["hostname"] == "spine01"
+    assert result["vendor"] == "Juniper"
+    assert result["model"] == "QFX5100-48S-6Q"
+    assert len(result["interface_list"]) == 3
+
+
+def test_napalm_device_get_facts_minimal_interfaces(mocker):
+    """Test get_facts with minimal interface list"""
+    mock_driver = mocker.Mock(spec=NetworkDriver)
+    mock_driver.get_facts.return_value = {
+        "hostname": "router01",
+        "fqdn": "router01.local",
+        "vendor": "Cisco",
+        "model": "ASR1001-X",
+        "serial_number": "CSC123ABC",
+        "os_version": "17.6.1",
+        "uptime": 86400.0,
+        "interface_list": ["GigabitEthernet0/0/0"],
+    }
+
+    device = NapalmDevice(mock_driver)
+    result = device.get_facts()
+
+    assert result["hostname"] == "router01"
+    assert len(result["interface_list"]) == 1
+    assert result["interface_list"][0] == "GigabitEthernet0/0/0"
+
+
+def test_napalm_device_get_facts_zero_uptime(mocker):
+    """Test get_facts with zero uptime"""
+    mock_driver = mocker.Mock(spec=NetworkDriver)
+    mock_driver.get_facts.return_value = {
+        "hostname": "newdevice",
+        "fqdn": "newdevice.example.com",
+        "vendor": "Arista",
+        "model": "DCS-7050TX3-48YC8",
+        "serial_number": "NEW123456789",
+        "os_version": "4.28.0F",
+        "uptime": 0.0,
+        "interface_list": [],
+    }
+
+    device = NapalmDevice(mock_driver)
+    result = device.get_facts()
+
+    assert result["uptime"] == 0.0
+    assert result["interface_list"] == []
+
+
+def test_napalm_device_get_facts_calls_driver(mocker):
+    """Test get_facts calls driver.get_facts() method"""
+    mock_driver = mocker.Mock(spec=NetworkDriver)
+    mock_driver.get_facts.return_value = {
+        "hostname": "test",
+        "fqdn": "test.com",
+        "vendor": "TestVendor",
+        "model": "TestModel",
+        "serial_number": "TEST123",
+        "os_version": "1.0",
+        "uptime": 1000.0,
+        "interface_list": ["eth0"],
+    }
+
+    device = NapalmDevice(mock_driver)
+    device.get_facts()
+
+    mock_driver.get_facts.assert_called_once()
+
+
+def test_napalm_device_get_facts_large_uptime(mocker):
+    """Test get_facts with large uptime value"""
+    mock_driver = mocker.Mock(spec=NetworkDriver)
+    # 365 days in seconds
+    large_uptime = 365 * 24 * 60 * 60
+    mock_driver.get_facts.return_value = {
+        "hostname": "stable-device",
+        "fqdn": "stable-device.example.com",
+        "vendor": "Arista",
+        "model": "DCS-7050SX3-48YC8",
+        "serial_number": "STABLE123",
+        "os_version": "4.28.0F",
+        "uptime": float(large_uptime),
+        "interface_list": ["Ethernet1", "Ethernet2"],
+    }
+
+    device = NapalmDevice(mock_driver)
+    result = device.get_facts()
+
+    assert result["uptime"] == float(large_uptime)
+
+
 def test_napalm_device_get_interfaces_success(mocker):
     """Test get_interfaces returns transformed interface data"""
     mock_driver = mocker.Mock(spec=NetworkDriver)

@@ -3,6 +3,7 @@ from typing import cast
 from napalm.base import NetworkDriver
 
 from network_cicd.devices.protocol import NetworkDevice
+from network_cicd.models.fact import DeviceFactsDict
 from network_cicd.models.bgp import (
     AddressFamilyDict,
     AFEntry,
@@ -31,6 +32,11 @@ class NapalmDevice(NetworkDevice):
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self._device.close()
+
+    def get_facts(self) -> DeviceFactsDict:
+        """Get basic facts about the device"""
+        facts =  self._device.get_facts()
+        return DeviceFactsDict(**facts)
 
     def get_interfaces(self) -> InterfaceDict:
         """Get interface information from the EOS device"""
