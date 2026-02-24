@@ -39,5 +39,8 @@ jobs:
           cd ansible/
           uv run ansible-playbook playbooks/deploy.yml -i inventory.dev.yml
 
+      - name: Sleep for 180 seconds to allow the topology to stabilize
+        run: sleep 180
+
       - name: Run fabric tests
         run: uv run pytest tests/fabric/
