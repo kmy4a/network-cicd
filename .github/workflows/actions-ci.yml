@@ -29,16 +29,10 @@ jobs:
       - name: Install containerlab
         run: curl -sL https://containerlab.dev/setup | sudo -E bash -s "all"
 
-      - name: Cleanup previous lab
-        run: |
-          cd containerlab/
-          sudo containerlab inspect || true
-          sudo containerlab destroy || true
-
       - name: Deploy containerlab topology
         run: |
           cd containerlab/
-          sudo containerlab deploy
+          containerlab deploy
 
       - name: Deploy configurations
         run: |
