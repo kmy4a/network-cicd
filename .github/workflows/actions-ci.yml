@@ -37,7 +37,7 @@ jobs:
       - name: Deploy configurations
         run: |
           cd ansible/
-          uv run ansible-playbook playbooks/deploy.yml
+          uv run ansible-playbook playbooks/deploy.yml -i inventory.dev.yml
 
       - name: Run fabric tests
         run: uv run pytest tests/fabric/
