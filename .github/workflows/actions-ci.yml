@@ -32,13 +32,13 @@ jobs:
       - name: Cleanup previous lab
         run: |
           cd containerlab/
-          containerlab inspect || true
-          containerlab destroy || true
+          sudo containerlab inspect || true
+          sudo containerlab destroy || true
 
       - name: Deploy containerlab topology
         run: |
           cd containerlab/
-          containerlab deploy
+          sudo containerlab deploy
 
       - name: Deploy configurations
         run: |
