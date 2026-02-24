@@ -49,3 +49,8 @@ jobs:
 
       - name: Run fabric tests
         run: uv run pytest tests/fabric/
+
+      - name: Cleanup current containerlab topology
+        run: |
+          cd containerlab/
+          containerlab destroy
