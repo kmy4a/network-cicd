@@ -21,10 +21,13 @@ def test_bgp_neighbors(fabric):
             .get("bgp", {})
             .get("neighbors", {})
         )
+
+        assert set(bgp_neighbors.get("global", {}).get("peers", {}).keys()) == set(
+            expected_neighbors.keys()
+        )
         for neighbor_ip, neighbor_info in (
             bgp_neighbors.get("global", {}).get("peers", {}).items()
         ):
-            assert neighbor_ip in expected_neighbors
             assert neighbor_info.get("description") == expected_neighbors[
                 neighbor_ip
             ].get("description", "")
@@ -44,17 +47,9 @@ def test_bgp_neighbor_state(fabric):
             password=password,
         )
         bgp_neighbors = device.get_bgp_neighbors()
-        expected_neighbors = (
-            fabric.get("devices", {})
-            .get(device_name, {})
-            .get("bgp", {})
-            .get("neighbors", {})
-        )
-        for neighbor_ip, neighbor_info in (
-            bgp_neighbors.get("global", {}).get("peers", {}).items()
-        ):
-            assert neighbor_ip in expected_neighbors
+        for neighbor_info in bgp_neighbors.get("global", {}).get("peers", {}).values():
             assert neighbor_info.get("is_up", False)
+            assert neighbor_info.get("is_enabled", False)
 
 
 def test_bgp_neighbor_asn(fabric):
@@ -80,7 +75,6 @@ def test_bgp_neighbor_asn(fabric):
         for neighbor_ip, neighbor_info in (
             bgp_neighbors.get("global", {}).get("peers", {}).items()
         ):
-            assert neighbor_ip in expected_neighbors
             assert neighbor_info.get("remote_as") == expected_neighbors[
                 neighbor_ip
             ].get("remote_as")
