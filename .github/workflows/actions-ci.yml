@@ -26,10 +26,10 @@ jobs:
       - name: Run unit tests
         run: uv run pytest tests/unit/
 
-      - name: Install ContainerLab
+      - name: Install containerlab
         run: curl -sL https://containerlab.dev/setup | sudo -E bash -s "all"
 
-      - name: Deploy ContainerLab topology
+      - name: Deploy containerlab topology
         run: |
           cd containerlab/
           containerlab deploy
