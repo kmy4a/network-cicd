@@ -24,13 +24,20 @@ jobs:
           uv pip install -e .
 
       - name: Run unit tests
-        run: uv run pytest tests/
+        run: uv run pytest tests/unit/
 
-      - name: Deploy Fabric
+      - name: Install ContainerLab
+        run: curl -sL https://containerlab.dev/setup | sudo -E bash -s "all"
+
+      - name: Deploy ContainerLab topology
+        run: |
+          cd containerlab/
+          containerlab deploy
+
+      - name: Deploy configurations
         run: |
           cd ansible/
           uv run ansible-playbook playbooks/deploy.yml
-          cd ../
 
-      - name: Run integration tests
-        run: uv run pytest integration_tests/
+      - name: Run fabric tests
+        run: uv run pytest tests/fabric/
