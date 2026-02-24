@@ -2,6 +2,10 @@
 
 ## Pytest tasks
 
+### using get_facts
+
+- Check hostname is correct
+
 ### using get_interfaces
 
 - Check all interfaces are in up/up state

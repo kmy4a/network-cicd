@@ -1,0 +1,227 @@
+---
+credentials:
+  spine01:
+    username: admin
+    password: admin
+  spine02:
+    username: admin
+    password: admin
+  leaf01:
+    username: admin
+    password: admin
+  leaf02:
+    username: admin
+    password: admin
+  leaf03:
+    username: admin
+    password: admin
+  leaf04:
+    username: admin
+    password: admin
+
+devices:
+  spine01:
+    hostname: spine01
+    interfaces:
+      Loopback0:
+        ip_address: 10.255.0.1/32
+      Ethernet1/1:
+        description: Uplink to leaf01
+        ip_address: 10.0.0.0/31
+      Ethernet2/1:
+        description: Uplink to leaf02
+        ip_address: 10.0.0.2/31
+      Ethernet3/1:
+        description: Uplink to leaf03
+        ip_address: 10.0.0.4/31
+      Ethernet4/1:
+        description: Uplink to leaf04
+        ip_address: 10.0.0.6/31
+    bgp:
+      asn: 65000
+      neighbors:
+        10.0.0.1:
+          remote_as: 65100
+          description: leaf01
+        10.0.0.3:
+          remote_as: 65101
+          description: leaf02
+        10.0.0.5:
+          remote_as: 65102
+          description: leaf03
+        10.0.0.7:
+          remote_as: 65103
+          description: leaf04
+      routes:
+        - 10.255.0.2/32
+        - 10.255.1.1/32
+        - 10.255.1.2/32
+        - 10.255.1.3/32
+        - 10.255.1.4/32
+        - 192.168.1.0/24
+        - 192.168.2.0/24
+        - 192.168.3.0/24
+        - 192.168.4.0/24
+
+  spine02:
+    hostname: spine02
+    interfaces:
+      Loopback0:
+        ip_address: 10.255.0.2/32
+      Ethernet1/1:
+        description: Uplink to leaf01
+        ip_address: 10.0.1.0/31
+      Ethernet2/1:
+        description: Uplink to leaf02
+        ip_address: 10.0.1.2/31
+      Ethernet3/1:
+        description: Uplink to leaf03
+        ip_address: 10.0.1.4/31
+      Ethernet4/1:
+        description: Uplink to leaf04
+        ip_address: 10.0.1.6/31
+    bgp:
+      asn: 65001
+      neighbors:
+        10.0.1.1:
+          remote_as: 65100
+          description: leaf01
+        10.0.1.3:
+          remote_as: 65101
+          description: leaf02
+        10.0.1.5:
+          remote_as: 65102
+          description: leaf03
+        10.0.1.7:
+          remote_as: 65103
+          description: leaf04
+      routes:
+        - 10.255.0.1/32
+        - 10.255.1.1/32
+        - 10.255.1.2/32
+        - 10.255.1.3/32
+        - 10.255.1.4/32
+        - 192.168.1.0/24
+        - 192.168.2.0/24
+        - 192.168.3.0/24
+        - 192.168.4.0/24
+
+  leaf01:
+    hostname: leaf01
+    interfaces:
+      Loopback0:
+        ip_address: 10.255.1.1/32
+      Ethernet63/1:
+        description: Uplink to spine01
+        ip_address: 10.0.0.1/31
+      Ethernet64/1:
+        description: Uplink to spine02
+        ip_address: 10.0.1.1/31
+    bgp:
+      asn: 65100
+      neighbors:
+        10.0.0.0:
+          remote_as: 65000
+          description: spine01
+        10.0.1.0:
+          remote_as: 65001
+          description: spine02
+      routes:
+        - 10.255.0.1/32
+        - 10.255.0.2/32
+        - 10.255.1.2/32
+        - 10.255.1.3/32
+        - 10.255.1.4/32
+        - 192.168.2.0/24
+        - 192.168.3.0/24
+        - 192.168.4.0/24
+
+  leaf02:
+    hostname: leaf02
+    interfaces:
+      Loopback0:
+        ip_address: 10.255.1.2/32
+      Ethernet63/1:
+        description: Uplink to spine01
+        ip_address: 10.0.0.3/31
+      Ethernet64/1:
+        description: Uplink to spine02
+        ip_address: 10.0.1.3/31
+    bgp:
+      asn: 65101
+      neighbors:
+        10.0.0.2:
+          remote_as: 65000
+          description: spine01
+        10.0.1.2:
+          remote_as: 65001
+          description: spine02
+      routes:
+        - 10.255.0.1/32
+        - 10.255.0.2/32
+        - 10.255.1.1/32
+        - 10.255.1.3/32
+        - 10.255.1.4/32
+        - 192.168.1.0/24
+        - 192.168.3.0/24
+        - 192.168.4.0/24
+
+  leaf03:
+    hostname: leaf03
+    interfaces:
+      Loopback0:
+        ip_address: 10.255.1.3/32
+      Ethernet63/1:
+        description: Uplink to spine01
+        ip_address: 10.0.0.5/31
+      Ethernet64/1:
+        description: Uplink to spine02
+        ip_address: 10.0.1.5/31
+    bgp:
+      asn: 65102
+      neighbors:
+        10.0.0.4:
+          remote_as: 65000
+          description: spine01
+        10.0.1.4:
+          remote_as: 65001
+          description: spine02
+      routes:
+        - 10.255.0.1/32
+        - 10.255.0.2/32
+        - 10.255.1.1/32
+        - 10.255.1.2/32
+        - 10.255.1.4/32
+        - 192.168.1.0/24
+        - 192.168.2.0/24
+        - 192.168.4.0/24
+
+  leaf04:
+    hostname: leaf04
+    interfaces:
+      Loopback0:
+        ip_address: 10.255.1.4/32
+      Ethernet63/1:
+        description: Uplink to spine01
+        ip_address: 10.0.0.7/31
+      Ethernet64/1:
+        description: Uplink to spine02
+        ip_address: 10.0.1.7/31
+    bgp:
+      asn: 65103
+      neighbors:
+        10.0.0.6:
+          remote_as: 65000
+          description: spine01
+        10.0.1.6:
+          remote_as: 65001
+          description: spine02
+      routes:
+        - 10.255.0.1/32
+        - 10.255.0.2/32
+        - 10.255.1.1/32
+        - 10.255.1.2/32
+        - 10.255.1.3/32
+        - 192.168.1.0/24
+        - 192.168.2.0/24
+        - 192.168.3.0/24
