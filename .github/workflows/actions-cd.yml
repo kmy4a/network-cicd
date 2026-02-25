@@ -30,7 +30,7 @@ jobs:
         run: curl -sL https://containerlab.dev/setup | sudo -E bash -s "all"
 
       # using containerlab as production environment at this time
-      - name: Cleanup existing containerlab topology
+      - name: Cleanup existing production topology
         run: |
           cd containerlab-prod/
           containerlab destroy || true
@@ -45,7 +45,7 @@ jobs:
           cd ansible/
           uv run ansible-playbook playbooks/deploy.yml -i inventory.prod.yml
 
-      - name: Cleanup current containerlab topology
+      - name: Cleanup current production topology
         run: |
           cd containerlab-prod/
           containerlab destroy
