@@ -9,6 +9,10 @@ on:
 
 jobs:
   deploy-fabric:
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push'
+
     environment: Production
     runs-on: self-hosted
     steps:
